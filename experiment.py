@@ -99,33 +99,28 @@ def run_experiment_with_model(model, model_name, questions, input_file):
             print(f"  執行 {exp['description']}")
             
             # 檢查是否已經有結果，避免重複處理
-            if "results" in question and exp_name in question["results"]:
-                print(f"  已存在結果，跳過")
-                continue
+            # if "results" in question and exp_name in question["results"]:
+            #    print(f"  已存在結果，跳過")
+            #    continue
             
-            try:
-                # 生成提示並獲取回答
-                prompt = exp["prompt_generator"](question)
-                response = model.answer_question(prompt)
-                answer = model.extract_answer(response, exp["format_type"])
+         
+            # 生成提示並獲取回答
+            prompt = exp["prompt_generator"](question)
+            response = model.answer_question(prompt)
+            answer = model.extract_answer(response, exp["format_type"])
+            
+            # 將結果添加到問題中
+            if "results" not in question:
+                question["results"] = {}
+            
+            # 儲存結果但不儲存完整回應，只保存提取出的答案
+            question["results"][exp_name] = {
+                "answer": answer
+            }
+            
+            # 只列印提取出的答案
+            print(f"  回答: {answer}")
                 
-                # 將結果添加到問題中
-                if "results" not in question:
-                    question["results"] = {}
-                
-                # 儲存結果但不儲存完整回應，只保存提取出的答案
-                question["results"][exp_name] = {
-                    "answer": answer
-                }
-                
-                # 只列印提取出的答案
-                print(f"  回答: {answer}")
-                
-            except Exception as e:
-                print(f"  處理時發生錯誤: {e}")
-                question["results"][exp_name] = {
-                    "error": str(e)
-                }
             
             # 每處理完一個實驗就保存一次檔案，以防萬一程式中途停止
             with open(input_file, 'w', encoding='utf-8') as f:
@@ -142,33 +137,28 @@ def run_experiment(input_file):
     print(f"讀取問題集: {input_file}")
     
     # 讀取問題集
-    try:
-        with open(input_file, 'r', encoding='utf-8') as f:
-            questions = json.load(f)
-    except Exception as e:
-        print(f"讀取檔案時發生錯誤: {e}")
-        return
+    
+    with open(input_file, 'r', encoding='utf-8') as f:
+        questions = json.load(f)
+
     
     print(f"共讀取 {len(questions)} 個問題")
     
     # 初始化兩個模型
-    try:
-        print("初始化 Gemini 模型")
-        gemini_model = GeminiModel()
-        
-        # 使用 Gemini 模型進行實驗
-        run_experiment_with_model(gemini_model, "gemini", questions, input_file)
-    except Exception as e:
-        print(f"Gemini 模型初始化或運行時出錯: {e}")
+   
+    print("初始化 Gemini 模型")
+    gemini_model = GeminiModel()
     
-    try:
-        print("初始化 Mistral 模型")
-        mistral_model = MistralModel()
-        
-        # 使用 Mistral 模型進行實驗
-        run_experiment_with_model(mistral_model, "mistral", questions, input_file)
-    except Exception as e:
-        print(f"Mistral 模型初始化或運行時出錯: {e}")
+    # 使用 Gemini 模型進行實驗
+    run_experiment_with_model(gemini_model, "gemini", questions, input_file)
+
+    
+    print("初始化 Mistral 模型")
+    mistral_model = MistralModel()
+    
+    # 使用 Mistral 模型進行實驗
+    run_experiment_with_model(mistral_model, "mistral", questions, input_file)
+
     
     # 儲存最終結果
     print(f"\n更新最終結果到: {input_file}")

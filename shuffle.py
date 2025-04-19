@@ -4,15 +4,11 @@ import copy
 import os
 
 def shuffle_options(question):
-    """打亂問題選項順序，並更新正確答案的選項標記"""
-    # 創建一個問題的深度拷貝，避免修改原問題
+
     new_question = copy.deepcopy(question)
     
     # 獲取原始正確答案的索引 (A=0, B=1, C=2, D=3)
     original_answer = new_question.get("Answer", "")
-    if not original_answer or original_answer not in "ABCD":
-        print(f"警告: 問題缺少有效答案或答案格式不正確: {original_answer}")
-        return new_question
     
     answer_index = ord(original_answer) - ord('A')
     
@@ -57,13 +53,10 @@ def shuffle_questions_file():
     
     print(f"讀取問題檔案: {input_file}")
     
-    try:
-        # 讀取問題集
-        with open(input_file, 'r', encoding='utf-8') as f:
-            questions = json.load(f)
-    except Exception as e:
-        print(f"讀取檔案時發生錯誤: {e}")
-        return
+    
+    with open(input_file, 'r', encoding='utf-8') as f:
+        questions = json.load(f)
+
     
     print(f"共讀取 {len(questions)} 個問題")
     

@@ -68,29 +68,27 @@ class BaseModel:
             except json.JSONDecodeError:
                 # JSON解析失敗時，使用文本方式再次提取
                 return self.extract_answer(normalized_response, format_type="text")
-        
+            
+        # 如果回應是 xml
         elif format_type == "xml":
-            try:
-                # 尋找 <answer>X</answer> 格式
-                match = re.search(r"<answer>([A-D])</answer>", normalized_response)
-                if match:
-                    return match.group(1).upper()
-                
-                # 如果沒找到，嘗試文本方式提取
-                return self.extract_answer(normalized_response, format_type="text")
-            except Exception:
-                return response
+            
+            # 尋找 <answer>X</answer> 格式
+            match = re.search(r"<answer>([A-D])</answer>", normalized_response)
+            if match:
+                return match.group(1).upper()
+            
+            # 如果沒找到，嘗試文本方式提取
+            return self.extract_answer(normalized_response, format_type="text")
         
+    
         return response
 
 
 class GeminiModel(BaseModel):
-    """Google Gemini 模型實現"""
     
     def __init__(self, api_key = "AIzaSyAYay20N3vkRCMrpbg65ZSfJ-k_Y0uxes8", model_name = "gemini-2.0-flash"):
-        """初始化 Google Gemini 模型"""
-        # 從環境變數或參數設置 API 金鑰
-        self.api_key = api_key
+
+        self.api_key = api_key 
         
         # 設置 API 金鑰並初始化模型
         genai.configure(api_key=self.api_key)
@@ -98,58 +96,50 @@ class GeminiModel(BaseModel):
         self.model = genai.GenerativeModel(model_name)
     
     def answer_question(self, prompt, temperature = 0.7, max_tokens = 1024) :
-        """使用 Gemini 根據提供的 prompt 回答問題"""
-        try:
-            response = self.model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=temperature,
-                    max_output_tokens=max_tokens,
-                )
+        
+    
+        response = self.model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=temperature,
+                max_output_tokens=max_tokens,
             )
-            return response.text
-        except Exception as e:
-            print(f"發生錯誤: {e}")
-            return f"錯誤: {e}"
-
+        )
+        return response.text
 
 class MistralModel(BaseModel):
-    """Mistral AI 模型實現"""
+    
     
     def __init__(self, api_key = "klJYBumsimymwd5pADaw04ZvTMetcXYO", model_name = "mistral-large-latest"):
-        """初始化 Mistral AI 模型"""
-        # 從環境變數或參數設置 API 金鑰
+
         self.api_key = api_key
-        
-        # 初始化客戶端
+
         self.client = Mistral(api_key=self.api_key)
         self.model_name = model_name
     
     def answer_question(self, prompt, temperature = 0.7, max_tokens = 1024) :
-        """使用 Mistral 根據提供的 prompt 回答問題"""
-        try:
-            # 創建聊天消息
-            messages = [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+        
+        
+           
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+        
+        
+        chat_response = self.client.chat.complete(
+            model=self.model_name,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        
+        # 提取回應內容
+        return chat_response.choices[0].message.content
             
-            # 獲取回應
-            chat_response = self.client.chat.complete(
-                model=self.model_name,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
-            
-            # 提取回應內容
-            return chat_response.choices[0].message.content
-            
-        except Exception as e:
-            print(f"發生錯誤: {e}")
-            return f"錯誤: {e}"
+     
         
 if __name__ == "__main__":
     question = "請回答以下選擇題：\n法國的首都是？\nA. 柏林\nB. 倫敦\nC. 巴黎\nD. 羅馬\n\n請只回答字母，格式為「Answer: X」，其中 X 是選項的字母。"

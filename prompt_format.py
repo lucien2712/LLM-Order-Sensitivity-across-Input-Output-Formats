@@ -1,3 +1,5 @@
+import json
+
 # Base format: 純文字輸入，純文字輸出
 def base_format(row):
     QUERY_TEMPLATE = """
@@ -17,7 +19,6 @@ def base_format(row):
 
 # JSON format: JSON輸入，JSON輸出
 def json_format(row):
-    import json
     
     question_obj = {
         "question": row["Question"],
@@ -64,7 +65,6 @@ def xml_format(row):
 
 # JSON輸入，純文字輸出
 def json_input_text_output(row):
-    import json
     
     question_obj = {
         "question": row["Question"],
