@@ -4,6 +4,8 @@
 - **prompt_format.py**: 定義各種提示格式（純文字、JSON、XML）和輸入輸出組合
 - **shuffle.py**: 打亂題目選項順序，保持答案正確性
 - **experiment.py**: 主要實驗程式，使用不同格式讓模型回答問題並記錄結果
+- **eval.py**: 評估模型回答的準確率、波動率等指標，並生成評估報告
+- **visualize.py**: 生成各種視覺化圖表，包括準確率比較、波動率分析、語言和學科敏感性分析等
 
 ## 執行順序
 
@@ -27,17 +29,36 @@
    # 或使用打亂選項後的數據
    python experiment.py --input shuffle_mmlu_17subjects_2langs_100samples.json
    ```
+3. 執行 eval.py 評估模型表現：
+   ```bash
+   python eval.py
+   ```
+   這會生成評估報告，包含準確率、波動率等指標
 
+4. 執行 visualize.py 生成視覺化圖表：
+   ```bash
+   python visualize.py
+   ```
+   這會生成各種分析圖表，包括：
+   - 準確率比較圖
+   - 波動率分析圖
+   - 語言敏感性分析圖
+   - 學科敏感性熱圖
+   - 信心與順序敏感性關係圖
+   - 偏差指標雷達圖
+   - 總結報告
+
+5. 或你可以直接執行 
+```bash
+bash run.sh
+```
 ## 重要說明
 
 - 執行 experiment.py 時必須手動指定使用哪個輸入檔案，可以是原始的 `mmlu_17subjects_2langs_100samples.json` 或打亂後的 `shuffle_mmlu_17subjects_2langs_100samples.json`
-- 實驗結果會保存回輸入的 JSON 檔案中，並生成兩個摘要報告：
-  - `{model}_main_formats_summary.csv`: 比較基本格式、JSON和XML格式的效果
-  - `{model}_json_variants_summary.csv`: 比較不同JSON輸入輸出組合的效果
 - 默認情況下，程式會依序使用 Gemini 和 Mistral 兩個模型進行測試
 - 使用前需要在環境變數或 model.py 中設定 API 金鑰：
-  - Gemini：設置 `GOOGLE_API_KEY` 環境變數
-  - Mistral：設置 `MISTRAL_API_KEY` 環境變數
+  - Gemini：設置 `GOOGLE_API_KEY` 
+  - Mistral：設置 `MISTRAL_API_KEY`
 
 ## 格式測試說明
 
