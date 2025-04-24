@@ -29,13 +29,13 @@ def json_format(row):
             "D": row["D"]
         }
     }
-    json_output = {
+    json_output_obj = {
         "answer": "LETTER"
-        }
+    }
 
     # 使用 indent=2 格式化 JSON
     formatted_json = json.dumps(question_obj, ensure_ascii=False, indent=2)
-    json_output = json.dumps(json_output, indent=2)
+    json_output = json.dumps(json_output_obj, indent=2)
     
     QUERY_TEMPLATE = """
     Answer the following multiple choice question. The last line of your response
@@ -46,7 +46,7 @@ def json_format(row):
     {formatted_json}
     """.strip()
     
-    return QUERY_TEMPLATE.format(formatted_json=formatted_json)
+    return QUERY_TEMPLATE.format(formatted_json=formatted_json, json_output=json_output)
 
 # XML format: XML輸入，XML輸出
 def xml_format(row):
@@ -101,10 +101,10 @@ def json_input_text_output(row):
 # 純文字輸入，JSON輸出
 def text_input_json_output(row):
 
-    json_output= {
+    json_output_obj = {
         "answer": "LETTER"
-        }
-    json_output = json.dumps(json_output, indent=2)
+    }
+    json_output = json.dumps(json_output_obj, indent=2)
     
     QUERY_TEMPLATE = """
     Answer the following multiple choice question. The last line of your response
@@ -120,4 +120,5 @@ def text_input_json_output(row):
     D) {D}
     """.strip()
     
-    return QUERY_TEMPLATE.format(Question=row["Question"], A=row["A"], B=row["B"], C=row["C"], D=row["D"])
+    return QUERY_TEMPLATE.format(Question=row["Question"], A=row["A"], B=row["B"], 
+                                C=row["C"], D=row["D"], json_output=json_output)

@@ -101,17 +101,30 @@ def plot_confidence_vs_sensitivity():
         plt.scatter(model_data['Original_CKLD'], model_data['Fluctuation_Rate'], 
                    label=model, s=100, alpha=0.7)
     
-    # 添加趨勢線
+    # 添加趨勢線（添加錯誤處理）
     x = overall_df['Original_CKLD']
     y = overall_df['Fluctuation_Rate']
-    z = np.polyfit(x, y, 1)
-    p = np.poly1d(z)
-    plt.plot(x, p(x), "r--", alpha=0.5)
     
-    # 計算相關係數
-    corr = np.corrcoef(x, y)[0, 1]
-    plt.annotate(f"Correlation: {corr:.3f}", xy=(0.05, 0.95), xycoords='axes fraction', 
-                 fontsize=12, bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8))
+    # 檢查數據有效性
+    valid_indices = ~(np.isnan(x) | np.isnan(y) | np.isinf(x) | np.isinf(y))
+    x_valid = x[valid_indices]
+    y_valid = y[valid_indices]
+    
+    # 只有當有足夠的有效數據點時才計算趨勢線
+    if len(x_valid) > 1:
+        try:
+            z = np.polyfit(x_valid, y_valid, 1)
+            p = np.poly1d(z)
+            plt.plot(x_valid, p(x_valid), "r--", alpha=0.5)
+            
+            # 計算相關係數
+            corr = np.corrcoef(x_valid, y_valid)[0, 1]
+            plt.annotate(f"Correlation: {corr:.3f}", xy=(0.05, 0.95), xycoords='axes fraction', 
+                        fontsize=12, bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8))
+        except np.linalg.LinAlgError:
+            print("警告：無法計算趨勢線，數據可能不足或存在問題")
+    else:
+        print("警告：有效數據點不足，無法顯示趨勢線")
     
     plt.xlabel('Model Confidence (CKLD)')
     plt.ylabel('Order Sensitivity (Fluctuation Rate)')
