@@ -1,11 +1,11 @@
 ## 檔案說明
-- **download.py**: 下載多語言多選題測試資料集
-- **model.py**: 實現模型接口，包含 Gemini 和 Mistral AI 的連接和回答處理
+- **download.py**: 下載 2 語言 17 subtasks 資料集
+- **model.py**: model setting，包含 Gemini 和 Mistral 和回答處理
 - **prompt_format.py**: 定義各種提示格式（純文字、JSON、XML）和輸入輸出組合
 - **shuffle.py**: 打亂題目選項順序，保持答案正確性
 - **experiment.py**: 主要實驗程式，使用不同格式讓模型回答問題並記錄結果
-- **eval.py**: 評估模型回答的準確率、波動率等指標，並生成評估報告
-- **visualize.py**: 生成各種視覺化圖表，包括準確率比較、波動率分析、語言和學科敏感性分析等
+- **eval.py**: 評估模型回答的 RSD、CKLD 等指標
+- **visualize.py**: 生成各種視覺化圖表，包括準確率比較、波動率分析、語言和學科敏感性分析等 (這個是暫時 GPT 自己想的圖)
 
 ## 執行順序
 
@@ -56,7 +56,7 @@ bash run.sh
 
 - 執行 experiment.py 時必須手動指定使用哪個輸入檔案，可以是原始的 `mmlu_17subjects_2langs_100samples.json` 或打亂後的 `shuffle_mmlu_17subjects_2langs_100samples.json`
 - 默認情況下，程式會依序使用 Gemini 和 Mistral 兩個模型進行測試
-- 使用前需要在環境變數或 model.py 中設定 API 金鑰：
+- 使用前需要在 model.py 中設定 API token：
   - Gemini：設置 `GOOGLE_API_KEY` 
   - Mistral：設置 `MISTRAL_API_KEY`
 
@@ -65,12 +65,12 @@ bash run.sh
 實驗測試了以下格式：
 
 1. 基本格式比較：
-   - 純文字輸入，純文字輸出（基準點）
+   - 純文字輸入，純文字輸出（base）
    - JSON輸入，JSON輸出
    - XML輸入，XML輸出
 
 2. JSON變體比較：
-   - 純文字輸入，純文字輸出（基準點）
+   - 純文字輸入，純文字輸出（base）
    - JSON輸入，純文字輸出
    - 純文字輸入，JSON輸出
    - JSON輸入，JSON輸出

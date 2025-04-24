@@ -1,7 +1,5 @@
 import json
-import os
 from tqdm import tqdm
-import pandas as pd
 import argparse
 
 from model import GeminiModel, MistralModel
@@ -14,15 +12,7 @@ from prompt_format import (
 )
 
 def run_experiment_with_model(model, model_name, questions, input_file):
-    """
-    使用指定模型進行實驗
-    
-    參數:
-        model: 模型實例
-        model_name: 模型名稱
-        questions: 問題列表
-        input_file: 輸入檔案路徑，用於儲存結果
-    """
+ 
     print(f"\n使用 {model_name} 模型進行實驗")
     
     # 定義實驗設置 - 主要格式比較
@@ -47,7 +37,7 @@ def run_experiment_with_model(model, model_name, questions, input_file):
         }
     ]
     
-    # 定義實驗設置 - JSON格式變體比較
+    # 定義實驗設置
     json_variants = [
         {
             "name": f"{model_name}_base_format",
@@ -75,7 +65,7 @@ def run_experiment_with_model(model, model_name, questions, input_file):
         }
     ]
     
-    # 合併所有實驗（去除重複項）
+    # 合併所有實驗，共 3400 題
     all_experiments = []
     seen_names = set()
     
@@ -109,7 +99,7 @@ def run_experiment_with_model(model, model_name, questions, input_file):
             response = model.answer_question(prompt)
             answer = model.extract_answer(response, exp["format_type"])
             
-            # 將結果添加到問題中
+            # 將結果加到問題中
             if "results" not in question:
                 question["results"] = {}
             
@@ -118,7 +108,7 @@ def run_experiment_with_model(model, model_name, questions, input_file):
                 "answer": answer
             }
             
-            # 只列印提取出的答案
+            # 列印提取出的答案
             print(f"  回答: {answer}")
                 
             
@@ -127,24 +117,14 @@ def run_experiment_with_model(model, model_name, questions, input_file):
                 json.dump(questions, f, ensure_ascii=False, indent=2)
 
 def run_experiment(input_file):
-    """
-    讀取問題集 JSON 檔案，使用不同提示格式讓 LLM 回答，並將結果更新回原始檔案
-    同時使用 Gemini 和 Mistral 模型
-    
-    參數:
-        input_file: 輸入檔案路徑，也作為輸出檔案
-    """
+  
     print(f"讀取問題集: {input_file}")
     
-    # 讀取問題集
-    
+    # 讀取問題
     with open(input_file, 'r', encoding='utf-8') as f:
         questions = json.load(f)
-
-    
     print(f"共讀取 {len(questions)} 個問題")
-    
-    # 初始化兩個模型
+
    
     print("初始化 Gemini 模型")
     gemini_model = GeminiModel()
@@ -160,15 +140,14 @@ def run_experiment(input_file):
     run_experiment_with_model(mistral_model, "mistral", questions, input_file)
 
     
-    # 儲存最終結果
     print(f"\n更新最終結果到: {input_file}")
     with open(input_file, 'w', encoding='utf-8') as f:
         json.dump(questions, f, ensure_ascii=False, indent=2)
     
-    print("所有實驗完成!")
+    print("done!")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="使用不同格式提示的 LLM 問答實驗")
+    parser = argparse.ArgumentParser(description="使用不同格式提示的問答 prompt 實驗")
     parser.add_argument("--input", "-i", type=str, default="mmlu_17subjects_2langs_100samples.json",
                        help="輸入 JSON 檔案路徑，也作為輸出檔案 (預設: mmlu_17subjects_2langs_100samples.json)")
     
