@@ -44,7 +44,7 @@ def shuffle_options(question):
     return new_question
 
 def shuffle_questions_file():
-    """打亂 JSON 檔案中每個問題的選項順序"""
+
     # 固定輸入檔案
     input_file = "mmlu_17subjects_2langs_100samples.json"
     
@@ -76,7 +76,7 @@ def shuffle_questions_file():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(shuffled_questions, f, ensure_ascii=False, indent=2)
     
-    print("處理完成!")
+    print("done!")
 
 if __name__ == "__main__":
     shuffle_questions_file()
