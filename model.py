@@ -86,7 +86,7 @@ class BaseModel:
 
 class GeminiModel(BaseModel):
     
-    def __init__(self, api_key = "AIzaSyAYay20N3vkRCMrpbg65ZSfJ-k_Y0uxes8", model_name = "gemini-2.0-flash"):
+    def __init__(self, api_key = "API_KEY", model_name = "gemini-2.0-flash"):
 
         self.api_key = api_key 
         
@@ -110,7 +110,7 @@ class GeminiModel(BaseModel):
 class MistralModel(BaseModel):
     
     
-    def __init__(self, api_key = "klJYBumsimymwd5pADaw04ZvTMetcXYO", model_name = "mistral-large-latest"):
+    def __init__(self, api_key = "API_KEY", model_name = "mistral-large-latest"):
 
         self.api_key = api_key
 
