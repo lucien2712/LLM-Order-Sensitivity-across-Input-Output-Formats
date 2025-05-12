@@ -7,7 +7,7 @@ import re
 class BaseModel:
     
     def extract_answer(self, response, format_type="text"):
-        """從回應中提取答案，支援英文和中文"""
+      
         
         # 標準化回應，移除格式
         normalized_response = response.replace("**", "").replace("$", "").replace("\\", "")

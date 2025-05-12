@@ -176,15 +176,15 @@ def calculate_ckld(questions, model_name, format_name):
     return entropy(p, q)
 
 def get_language(question):
-    """判斷問題的語言"""
+   
     return question.get("Language")
 
 def get_subject(question):
-    """獲取問題的學科領域"""
+   
     return question.get("Subject")
 
 def evaluate_and_save_metrics(original_data, shuffled_data, model_names, format_names):
-    """評估指標並儲存在DataFrame中"""
+  
     # 初始化三個DataFrame的資料
     overall_metrics = []
     language_metrics = []
